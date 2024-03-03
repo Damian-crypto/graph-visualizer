@@ -31,7 +31,9 @@
                 <br>
                 <textarea id="inputdata" cols="40" rows="10"></textarea>
                 <br>
-                <input type="checkbox" id="directedgraph" value="directed"> Directed Graph
+                Directed Graph <input type="checkbox" id="directedgraph" value="directed">
+                <br>
+                Edge length: <input type="number" id="edge-length" value="100">
                 <br>
                 <button onclick="restart(true)">Change Direction</button>
                 <br>
@@ -55,6 +57,9 @@
 
                 var edges = new vis.DataSet();
 
+                const edgeLength = parseInt(document.getElementById("edge-length").value);
+                
+
                 for (let i = 0; i < dataSet.length; i++) {
                     dataSet[i].map((edge) => {
                         if (!dataNodes.includes(edge[0])) {
@@ -65,13 +70,14 @@
                             dataNodes.push(edge[1]);
                         }
 
-                        edges.add({ from: edge[0], to: edge[1], color: colors[i % colors.length]})
+                        
+                        edges.add({ from: edge[0], to: edge[1], color: colors[i % colors.length], length: edgeLength })
                     });
                 }
 
                 var nodes = new vis.DataSet();
                 for (let node of dataNodes) {
-                    nodes.add({ id: node, label: `${node}` });
+                    nodes.add({ id: `${node}`, label: `${node}` });
                 }
 
                 // var edges = new vis.DataSet([
@@ -89,6 +95,7 @@
                     nodes: nodes,
                     edges: edges
                 };
+                
                 var options = {
                     edges: {
                         arrows: {
