@@ -1,65 +1,66 @@
 <html>
 
-    <head>
-        <script type="text/javascript" src="src.js"></script>
+<head>
+    <script type="text/javascript" src="src.js"></script>
 
-        <style type="text/css">
-            #mynetwork {
-                width: 800px;
-                height: 600px;
-                border: 1px solid lightgray;
-            }
+    <style type="text/css">
+        #mynetwork {
+            width: 800px;
+            height: 600px;
+            border: 1px solid lightgray;
+        }
 
-            .container {
-                display: flex;
-                gap: 10px;
-            }
+        .container {
+            display: flex;
+            gap: 10px;
+        }
 
-            .container-tile {
-                display: block;
-            }
-        </style>
+        .container-tile {
+            display: block;
+        }
+    </style>
 
-        <title>Graph Visualizer</title>
-    </head>
+    <title>Graph Visualizer</title>
+</head>
 
-    <body>
-        <div class="container">
-            <div id="mynetwork"></div>
-            <div class="container-tile">
-                <label>Edges (2D Array)</label>
-                <br>
-                <textarea id="inputdata" cols="40" rows="10"></textarea>
-                <br>
-                Directed Graph <input type="checkbox" id="directedgraph" value="directed">
-                <br>
-                Edge length: <input type="number" id="edge-length" value="100">
-                <br>
-                <button onclick="restart(true)">Change Direction</button>
-                <br>
-                <button onclick="restart()">View as graph</button>
-                <br>
-            </div>
+<body>
+    <div class="container">
+        <div id="mynetwork"></div>
+        <div class="container-tile">
+            <label>Edges (2D Array)</label>
+            <br>
+            <textarea id="inputdata" cols="40" rows="10"></textarea>
+            <br>
+            Directed Graph <input type="checkbox" id="directedgraph" value="directed">
+            <br>
+            Edge length: <input type="number" id="edge-length" value="100">
+            <br>
+            <button onclick="restart(true)">Change Direction</button>
+            <br>
+            <button onclick="restart()">View as graph</button>
+            <br>
         </div>
+    </div>
 
-        <script type="text/javascript">
-            // var nodes = new vis.DataSet([
-            //     {id: 1, label: 'Node 1'},
-            //     {id: 2, label: 'Node 2'},
-            //     {id: 3, label: 'Node 3'},
-            //     {id: 4, label: 'Node 4'},
-            //     {id: 5, label: 'Node 5'}
-            // ]);
+    <script type="text/javascript">
+        // var nodes = new vis.DataSet([
+        //     {id: 1, label: 'Node 1'},
+        //     {id: 2, label: 'Node 2'},
+        //     {id: 3, label: 'Node 3'},
+        //     {id: 4, label: 'Node 4'},
+        //     {id: 5, label: 'Node 5'}
+        // ]);
 
-            function load(dataSet, directed) {
-                var dataNodes = [];
-                var colors = ["red", "blue", "black", "green"];
+        function load(dataSet, directed) {
+            var dataNodes = [];
+            var colors = ["red", "blue", "black", "green"];
 
-                var edges = new vis.DataSet();
+            var edges = new vis.DataSet();
 
-                const edgeLength = parseInt(document.getElementById("edge-length").value);
-                
+            const edgeLength = parseInt(document.getElementById("edge-length").value);
+            const itemsPerNode = dataSet[0][0].length;
 
+            if (itemsPerNode == 2) {
                 for (let i = 0; i < dataSet.length; i++) {
                     dataSet[i].map((edge) => {
                         if (!dataNodes.includes(edge[0])) {
@@ -70,94 +71,109 @@
                             dataNodes.push(edge[1]);
                         }
 
-                        
+
                         edges.add({ from: edge[0], to: edge[1], color: colors[i % colors.length], length: edgeLength })
                     });
                 }
-
-                var nodes = new vis.DataSet();
-                for (let node of dataNodes) {
-                    nodes.add({ id: `${node}`, label: `${node}` });
-                }
-
-                // var edges = new vis.DataSet([
-                //     { from: 1, to: 3 },
-                //     { from: 1, to: 2 },
-                //     { from: 2, to: 4 },
-                //     { from: 2, to: 5 }
-                // ]);
-
-                // create a network
-                var container = document.getElementById('mynetwork');
-
-                // provide the data in the vis format
-                var data = {
-                    nodes: nodes,
-                    edges: edges
-                };
-                
-                var options = {
-                    edges: {
-                        arrows: {
-                            to: { enabled: directed, scaleFactor: 1, type: "arrow" }
+            } else if (itemsPerNode == 3) {
+                for (let i = 0; i < dataSet.length; i++) {
+                    dataSet[i].map((edge) => {
+                        if (!dataNodes.includes(edge[0])) {
+                            dataNodes.push(edge[0]);
                         }
-                    },
-                };
 
-                // initialize your network!
-                var network = new vis.Network(container, data, options);
+                        if (!dataNodes.includes(edge[1])) {
+                            dataNodes.push(edge[1]);
+                        }
+
+                        edges.add({ from: edge[0], to: edge[1], label: `${edge[2]}`, color: colors[i % colors.length], length: edgeLength })
+                    });
+                }
             }
 
-            function restart(changeDirection=false) {
-                var data = document.getElementById("inputdata").value;
-                var directed = document.getElementById("directedgraph").checked;
-                var dataSet = [[]];
-                
-                console.log(data);
+            var nodes = new vis.DataSet();
+            for (let node of dataNodes) {
+                nodes.add({ id: `${node}`, label: `${node}` });
+            }
 
-                if (data !== "" && data !== null) {
-                    try {
-                        dataSet = JSON.parse(data);
-                    } catch (e) {
-                        dataSet = JSON.parse(`[${data}]`);
+            // var edges = new vis.DataSet([
+            //     { from: 1, to: 3 },
+            //     { from: 1, to: 2 },
+            //     { from: 2, to: 4 },
+            //     { from: 2, to: 5 }
+            // ]);
+
+            // create a network
+            var container = document.getElementById('mynetwork');
+
+            // provide the data in the vis format
+            var data = {
+                nodes: nodes,
+                edges: edges
+            };
+
+            var options = {
+                edges: {
+                    arrows: {
+                        to: { enabled: directed, scaleFactor: 1, type: "arrow" }
+                    }
+                },
+            };
+
+            // initialize your network!
+            var network = new vis.Network(container, data, options);
+        }
+
+        function restart(changeDirection = false) {
+            var data = document.getElementById("inputdata").value;
+            var directed = document.getElementById("directedgraph").checked;
+            var dataSet = [[]];
+
+            // console.log(data);
+
+            if (data !== "" && data !== null) {
+                try {
+                    dataSet = JSON.parse(data);
+                } catch (e) {
+                    dataSet = JSON.parse(`[${data}]`);
+                }
+            }
+
+            if (changeDirection) {
+                for (let i = 0; i < dataSet.length; i++) {
+                    for (let j = 0; j < dataSet[i].length; j++) {
+                        let tmp = dataSet[i][j][0];
+                        dataSet[i][j][0] = dataSet[i][j][1];
+                        dataSet[i][j][1] = tmp;
                     }
                 }
 
-                if (changeDirection) {
-                    for (let i = 0; i < dataSet.length; i++) {
-                        for (let j = 0; j < dataSet[i].length; j++) {
-                            let tmp = dataSet[i][j][0];
-                            dataSet[i][j][0] = dataSet[i][j][1];
-                            dataSet[i][j][1] = tmp;
-                        }
-                    }
-
-                    document.getElementById("inputdata").value = JSON.stringify(dataSet);
-                }
-
-                console.log(dataSet[0]);
-
-                if (dataSet[0].length === 0) {
-                    dataSet = [[[0,1],[2,1],[3,2],[4,2],[4,5],[6,0],[5,7],[8,4],[9,2]]];
-                }
-
-                load(dataSet, directed);
+                document.getElementById("inputdata").value = JSON.stringify(dataSet);
             }
 
-            document.getElementById("inputdata").innerText = `[[
-[5 ,1],
-[2 ,9],
-[5 ,8],
-[1 ,2],
-[1 ,3],
-[8 ,4],
-[6 ,7],
-[10 ,5],
-[7 ,1]
-]]`;
+            // console.log(dataSet[0]);
 
-            restart();
-        </script>
-    </body>
+            if (dataSet[0].length === 0) {
+                dataSet = [[[0, 1], [2, 1], [3, 2], [4, 2], [4, 5], [6, 0], [5, 7], [8, 4], [9, 2]]];
+            }
+
+            load(dataSet, directed);
+        }
+
+        document.getElementById("inputdata").innerText = `[[
+        [5 ,1],
+        [2 ,9],
+        [5 ,8],
+        [1 ,2],
+        [1 ,3],
+        [8 ,4],
+        [6 ,7],
+        [10 ,5],
+        [7 ,1]
+        ]]`;
+
+        restart();
+    </script>
+</body>
 
 </html>
